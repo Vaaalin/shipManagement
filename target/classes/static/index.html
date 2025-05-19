@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ship Management System</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-ship"></i> Ship Management System</h1>
+            <div class="user-info">
+                <span id="username">Welcome, Guest</span>
+                <button id="loginBtn" class="btn">Login</button>
+                <button id="logoutBtn" class="btn" style="display: none;">Logout</button>
+            </div>
+        </header>
+        
+        <nav>
+            <ul>
+                <li><a href="#" class="nav-link active" data-page="dashboard">Dashboard</a></li>
+                <li><a href="#" class="nav-link" data-page="ships">Ships</a></li>
+                <li><a href="#" class="nav-link" data-page="cargo">Cargo</a></li>
+                <li><a href="#" class="nav-link" data-page="ports">Ports</a></li>
+                <li><a href="#" class="nav-link admin-only" data-page="users">Users</a></li>
+            </ul>
+        </nav>
+        
+        <main id="content">
+            <!-- Dashboard Page -->
+            <div id="dashboard" class="page active">
+                <h2>Dashboard</h2>
+                <div class="dashboard-cards">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Ships</h3>
+                            <i class="fas fa-ship"></i>
+                        </div>
+                        <div class="card-body">
+                            <p class="count" id="shipCount">0</p>
+                            <p>Total Ships</p>
+                        </div>
+                        <div class="card-footer">
+                            <a href="#" class="btn" data-page="ships">View All</a>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Cargo</h3>
+                            <i class="fas fa-boxes"></i>
+                        </div>
+                        <div class="card-body">
+                            <p class="count" id="cargoCount">0</p>
+                            <p>Total Cargo</p>
+                        </div>
+                        <div class="card-footer">
+                            <a href="#" class="btn" data-page="cargo">View All</a>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Ports</h3>
+                            <i class="fas fa-anchor"></i>
+                        </div>
+                        <div class="card-body">
+                            <p class="count" id="portCount">0</p>
+                            <p>Total Ports</p>
+                        </div>
+                        <div class="card-footer">
+                            <a href="#" class="btn" data-page="ports">View All</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-tables">
+                    <div class="table-container">
+                        <h3>Recent Ships</h3>
+                        <table id="recentShipsTable">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Location</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Ships Page -->
+            <div id="ships" class="page">
+                <h2>Ships Management</h2>
+                <div class="actions">
+                    <button id="addShipBtn" class="btn"><i class="fas fa-plus"></i> Add Ship</button>
+                </div>
+                <div class="table-container">
+                    <table id="shipsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Capacity</th>
+                                <th>Status</th>
+                                <th>Location</th>
+                                <th>Destination</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Cargo Page -->
+            <div id="cargo" class="page">
+                <h2>Cargo Management</h2>
+                <div class="actions">
+                    <button id="addCargoBtn" class="btn"><i class="fas fa-plus"></i> Add Cargo</button>
+                </div>
+                <div class="table-container">
+                    <table id="cargoTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Type</th>
+                                <th>Weight</th>
+                                <th>Destination</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Ports Page -->
+            <div id="ports" class="page">
+                <h2>Ports Management</h2>
+                <div class="actions">
+                    <button id="addPortBtn" class="btn"><i class="fas fa-plus"></i> Add Port</button>
+                </div>
+                <div class="table-container">
+                    <table id="portsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Location</th>
+                                <th>Capacity</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Users Page (Admin Only) -->
+            <div id="users" class="page">
+                <h2>Users Management</h2>
+                <div class="actions">
+                    <button id="addUserBtn" class="btn"><i class="fas fa-plus"></i> Add User</button>
+                </div>
+                <div class="table-container">
+                    <table id="usersTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+            <p>&copy; 2025 Ship Management System. All rights reserved.</p>
+        </footer>
+    </div>
+    
+    <!-- Modal for forms -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+    
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Login</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginUsername">Username:</label>
+                    <input type="text" id="loginUsername" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password:</label>
+                    <input type="password" id="loginPassword" name="password" required>
+                </div>
+                <button type="submit" class="btn">Login</button>
+            </form>
+        </div>
+    </div>
+    
+    <script src="js/main.js"></script>
+</body>
+</html>
