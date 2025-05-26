@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShipTrack Pro - Edit Ship</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/dashboard">ShipTrack Pro</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/ships">Ships</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/ports">Ports</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard/routes">Routes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tasks">Tasks</a>
+                    </li>
+                    <!-- Admin-only menu items -->
+                    <li class="nav-item" th:if="${isAdmin}">
+                        <a class="nav-link" href="/meetings">Meetings</a>
+                    </li>
+                    <li class="nav-item" th:if="${isAdmin}">
+                        <a class="nav-link" href="/reports">Reports</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <form th:action="@{/logout}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-outline-light">Logout</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Edit Ship</h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/ships/edit/{id}(id=${ship.id})}" method="post" th:object="${ship}">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Ship Name</label>
+                                <input type="text" class="form-control" id="name" name="name" th:value="*{name}" required>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="type" class="form-label">Ship Type</label>
+                                    <select class="form-select" id="type" name="type" required>
+                                        <option value="">Select Ship Type</option>
+                                        <option value="Cargo" th:selected="*{type == 'Cargo'}">Cargo</option>
+                                        <option value="Tanker" th:selected="*{type == 'Tanker'}">Tanker</option>
+                                        <option value="Container" th:selected="*{type == 'Container'}">Container</option>
+                                        <option value="Passenger" th:selected="*{type == 'Passenger'}">Passenger</option>
+                                        <option value="Fishing" th:selected="*{type == 'Fishing'}">Fishing</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="status" class="form-label">Status</label>
+                                    <select class="form-select" id="status" name="status" required>
+                                        <option value="">Select Status</option>
+                                        <option value="DOCKED" th:selected="*{status != null && status.name() == 'DOCKED'}">Docked</option>
+                                        <option value="AT_SEA" th:selected="*{status != null && status.name() == 'AT_SEA'}">At Sea</option>
+                                        <option value="MAINTENANCE" th:selected="*{status != null && status.name() == 'MAINTENANCE'}">Maintenance</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="capacity" class="form-label">Capacity (tons)</label>
+                                    <input type="number" class="form-control" id="capacity" name="capacity" th:value="*{capacity}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="yearBuilt" class="form-label">Year Built</label>
+                                    <input type="number" class="form-control" id="yearBuilt" name="yearBuilt" th:value="*{yearBuilt}" required>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="flag" class="form-label">Flag</label>
+                                    <input type="text" class="form-control" id="flag" name="flag" th:value="*{flag}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="imoNumber" class="form-label">IMO Number</label>
+                                    <input type="text" class="form-control" id="imoNumber" name="imoNumber" th:value="*{imoNumber}" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="currentPort" class="form-label">Current Port</label>
+                                <select class="form-select" id="currentPort" name="currentPort.id">
+                                    <option value="">At Sea</option>
+                                    <option th:each="port : ${ports}" 
+                                            th:value="${port.id}" 
+                                            th:text="${port.name}"
+                                            th:selected="${ship.currentPort != null && ship.currentPort.id == port.id}">Port Name</option>
+                                </select>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <a href="/ships" class="btn btn-secondary">Cancel</a>
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="mt-5 py-3 text-center text-muted">
+        <div class="container">
+            <p class="mb-0">&copy; 2023 ShipTrack Pro. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</body>
+</html>

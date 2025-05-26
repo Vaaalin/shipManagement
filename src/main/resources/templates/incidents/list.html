@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incidents - Ship Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <style>
+        .table-responsive {
+            overflow-x: auto;
+        }
+        .action-buttons {
+            white-space: nowrap;
+        }
+        .badge-pending {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        .badge-investigating {
+            background-color: #0dcaf0;
+        }
+        .badge-resolved {
+            background-color: #198754;
+        }
+        .badge-closed {
+            background-color: #6c757d;
+        }
+        .badge-critical {
+            background-color: #dc3545;
+        }
+        .badge-high {
+            background-color: #fd7e14;
+        }
+        .badge-medium {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        .badge-low {
+            background-color: #0dcaf0;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/dashboard">Ship Management System</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/ships">Ships</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/ports">Ports</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard/routes">Routes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tasks">Tasks</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/cargo">Cargo</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/incidents">Incidents</a>
+                    </li>
+                    <!-- Admin-only menu items -->
+                    <li class="nav-item" th:if="${isAdmin}">
+                        <a class="nav-link" href="/meetings">Meetings</a>
+                    </li>
+                    <li class="nav-item" th:if="${isAdmin}">
+                        <a class="nav-link" href="/reports">Reports</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <form th:action="@{/logout}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-outline-light">Logout</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row mb-3">
+            <div class="col">
+                <h2>Incident Management</h2>
+            </div>
+            <div class="col-auto">
+                <a href="/incidents/report" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Report New Incident
+                </a>
+            </div>
+        </div>
+
+        <!-- Alert Messages -->
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <!-- Incidents List Table -->
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Incidents List</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Title</th>
+                                <th>Type</th>
+                                <th>Date</th>
+                                <th>Severity</th>
+                                <th>Status</th>
+                                <th>Reported By</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${incidents.empty}">
+                                <td colspan="8" class="text-center">No incidents found</td>
+                            </tr>
+                            <tr th:each="incident : ${incidents}">
+                                <td th:text="${incident.id}"></td>
+                                <td th:text="${incident.title}"></td>
+                                <td th:text="${incident.incidentType}"></td>
+                                <td th:text="${#dates.format(incident.reportDate, 'yyyy-MM-dd HH:mm')}"></td>
+                                <td>
+                                    <span th:class="${'badge badge-' + incident.severity.toLowerCase()}" th:text="${incident.severity}"></span>
+                                </td>
+                                <td>
+                                    <span th:class="${'badge badge-' + incident.status.toLowerCase()}" th:text="${incident.status}"></span>
+                                </td>
+                                <td th:text="${incident.reportedBy != null ? incident.reportedBy.firstName + ' ' + incident.reportedBy.lastName : 'Unknown'}"></td>
+                                <td class="action-buttons">
+                                    <a th:href="@{/incidents/view/{id}(id=${incident.id})}" class="btn btn-sm btn-info">
+                                        <i class="bi bi-eye"></i> View
+                                    </a>
+                                    <a th:if="${isAdmin}" th:href="@{/incidents/update/{id}(id=${incident.id})}" class="btn btn-sm btn-warning">
+                                        <i class="bi bi-pencil"></i> Update
+                                    </a>
+                                    <a th:if="${isAdmin}" th:href="@{/incidents/delete/{id}(id=${incident.id})}" class="btn btn-sm btn-danger" 
+                                       onclick="return confirm('Are you sure you want to delete this incident?')">
+                                        <i class="bi bi-trash"></i> Delete
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white mt-5 py-3">
+        <div class="container text-center">
+            <p class="mb-0">&copy; 2023 Ship Management System. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

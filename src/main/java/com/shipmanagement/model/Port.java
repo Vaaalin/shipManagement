@@ -1,66 +1,38 @@
 package com.shipmanagement.model;
 
-/**
- * Class representing a port where ships can dock
- */
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.Data;
+
+@Data
+@Entity
+@Table(name = "ports")
 public class Port {
-    private String id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @Column(nullable = false, unique = true)
     private String name;
-    private String location;
-    private int capacity;
-    private String status;
     
-    /**
-     * Constructor for Port
-     */
-    public Port(String id, String name, String location, int capacity) {
-        this.id = id;
+    private String country;
+    private String city;
+    private Double latitude;
+    private Double longitude;
+    
+    // Default constructor
+    public Port() {}
+    
+    // Constructor with fields
+    public Port(String name, String country, String city, Double latitude, Double longitude) {
         this.name = name;
-        this.location = location;
-        this.capacity = capacity;
-        this.status = "Operational";
-    }
-    
-    // Getters and setters
-    public String getId() {
-        return id;
-    }
-    
-    public String getName() {
-        return name;
-    }
-    
-    public void setName(String name) {
-        this.name = name;
-    }
-    
-    public String getLocation() {
-        return location;
-    }
-    
-    public void setLocation(String location) {
-        this.location = location;
-    }
-    
-    public int getCapacity() {
-        return capacity;
-    }
-    
-    public void setCapacity(int capacity) {
-        this.capacity = capacity;
-    }
-    
-    public String getStatus() {
-        return status;
-    }
-    
-    public void setStatus(String status) {
-        this.status = status;
-    }
-    
-    @Override
-    public String toString() {
-        return "Port [id=" + id + ", name=" + name + ", location=" + location + 
-               ", capacity=" + capacity + ", status=" + status + "]";
+        this.country = country;
+        this.city = city;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 }

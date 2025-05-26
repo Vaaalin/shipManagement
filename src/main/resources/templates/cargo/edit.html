@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Cargo - Ship Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/dashboard">Ship Management System</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/ships">Ships</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/ports">Ports</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard/routes">Routes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tasks">Tasks</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/cargo">Cargo</a>
+                    </li>
+                    <!-- Admin-only menu items -->
+                    <li class="nav-item" th:if="${isAdmin}">
+                        <a class="nav-link" href="/meetings">Meetings</a>
+                    </li>
+                    <li class="nav-item" th:if="${isAdmin}">
+                        <a class="nav-link" href="/reports">Reports</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <form th:action="@{/logout}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-outline-light">Logout</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row mb-3">
+            <div class="col">
+                <h2>Edit Cargo</h2>
+            </div>
+            <div class="col-auto">
+                <a href="/cargo" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to Cargo List
+                </a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Cargo Details</h5>
+            </div>
+            <div class="card-body">
+                <form th:action="@{/cargo/edit/{id}(id=${cargo.id})}" th:object="${cargo}" method="post">
+                    <input type="hidden" th:field="*{id}">
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="cargoType" class="form-label">Cargo Type</label>
+                            <input type="text" class="form-control" id="cargoType" th:field="*{cargoType}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="weight" class="form-label">Weight (tons)</label>
+                            <input type="number" step="0.01" class="form-control" id="weight" th:field="*{weight}" required>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="ship" class="form-label">Ship</label>
+                            <select class="form-select" id="ship" th:field="*{ship}" th:disabled="${!isAdmin}">
+                                <option value="">-- Select Ship --</option>
+                                <option th:each="ship : ${ships}" th:value="${ship.id}" th:text="${ship.name}"></option>
+                            </select>
+                            <!-- Hidden field to preserve ship value if staff user -->
+                            <input type="hidden" th:if="${!isAdmin && cargo.ship != null}" th:name="ship" th:value="${cargo.ship.id}">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="hazardous" class="form-label">Hazardous</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="hazardous" th:field="*{hazardous}">
+                                <label class="form-check-label" for="hazardous">
+                                    Mark as hazardous cargo
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="contentDescription" class="form-label">Content Description</label>
+                        <textarea class="form-control" id="contentDescription" rows="3" th:field="*{contentDescription}" required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="specialHandling" class="form-label">Special Handling Instructions</label>
+                        <textarea class="form-control" id="specialHandling" rows="3" th:field="*{specialHandling}"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Last Updated</label>
+                        <p class="form-control-static" th:text="${#dates.format(cargo.lastUpdatedDate, 'yyyy-MM-dd HH:mm')}"></p>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Last Updated By</label>
+                        <p class="form-control-static" th:text="${cargo.lastUpdatedBy != null ? cargo.lastUpdatedBy.firstName + ' ' + cargo.lastUpdatedBy.lastName : 'Unknown'}"></p>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="/cargo" class="btn btn-secondary me-md-2">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white mt-5 py-3">
+        <div class="container text-center">
+            <p class="mb-0">&copy; 2023 Ship Management System. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

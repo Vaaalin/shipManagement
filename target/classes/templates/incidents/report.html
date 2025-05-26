@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Incident - Ship Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/dashboard">Ship Management System</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/ships">Ships</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/ports">Ports</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard/routes">Routes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tasks">Tasks</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/cargo">Cargo</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/incidents">Incidents</a>
+                    </li>
+                    <!-- Admin-only menu items -->
+                    <li class="nav-item" th:if="${isAdmin}">
+                        <a class="nav-link" href="/meetings">Meetings</a>
+                    </li>
+                    <li class="nav-item" th:if="${isAdmin}">
+                        <a class="nav-link" href="/reports">Reports</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <form th:action="@{/logout}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-outline-light">Logout</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row mb-3">
+            <div class="col">
+                <h2>Report New Incident</h2>
+            </div>
+            <div class="col-auto">
+                <a href="/incidents" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to Incidents
+                </a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Incident Details</h5>
+            </div>
+            <div class="card-body">
+                <form th:action="@{/incidents/report}" th:object="${incident}" method="post">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="title" class="form-label">Incident Title</label>
+                            <input type="text" class="form-control" id="title" th:field="*{title}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="incidentType" class="form-label">Incident Type</label>
+                            <select class="form-select" id="incidentType" th:field="*{incidentType}" required>
+                                <option value="">-- Select Type --</option>
+                                <option value="CARGO">Cargo Related</option>
+                                <option value="DOCK">Dock Related</option>
+                                <option value="SHIP">Ship Related</option>
+                                <option value="SAFETY">Safety Issue</option>
+                                <option value="OTHER">Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="severity" class="form-label">Severity</label>
+                            <select class="form-select" id="severity" th:field="*{severity}" required>
+                                <option value="">-- Select Severity --</option>
+                                <option value="LOW">Low</option>
+                                <option value="MEDIUM">Medium</option>
+                                <option value="HIGH">High</option>
+                                <option value="CRITICAL">Critical</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="location" class="form-label">Location</label>
+                            <input type="text" class="form-control" id="location" th:field="*{location}" required>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="cargo" class="form-label">Related Cargo (if applicable)</label>
+                            <select class="form-select" id="cargo" th:field="*{cargo}">
+                                <option value="">-- Select Cargo --</option>
+                                <option th:each="cargo : ${cargoList}" th:value="${cargo.id}" 
+                                        th:text="${cargo.cargoType + ' - ' + (cargo.ship != null ? cargo.ship.name : 'Not Assigned')}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="dock" class="form-label">Related Dock (if applicable)</label>
+                            <select class="form-select" id="dock" th:field="*{dock}">
+                                <option value="">-- Select Dock --</option>
+                                <option th:each="dock : ${dockList}" th:value="${dock.id}" 
+                                        th:text="${dock.name + ' - ' + dock.location}"></option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Incident Description</label>
+                        <textarea class="form-control" id="description" rows="5" th:field="*{description}" required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="actionTaken" class="form-label">Immediate Action Taken</label>
+                        <textarea class="form-control" id="actionTaken" rows="3" th:field="*{actionTaken}"></textarea>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="/incidents" class="btn btn-secondary me-md-2">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Submit Report
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white mt-5 py-3">
+        <div class="container text-center">
+            <p class="mb-0">&copy; 2023 Ship Management System. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

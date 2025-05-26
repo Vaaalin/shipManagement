@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShipTrack Pro - Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/dashboard">ShipTrack Pro</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/ships">Ships</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/ports">Ports</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard/routes">Routes</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <form th:action="@{/logout}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-outline-light">Logout</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-4">
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-subtitle mb-2">Total Ships</h6>
+                                <h3 class="mb-0" th:text="${ships != null ? #lists.size(ships) : 0}">0</h3>
+                            </div>
+                            <i class="bi bi-ship fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-subtitle mb-2">Active Ships</h6>
+                                <h3 class="mb-0" th:text="${ships != null ? #lists.size(ships.?[status.name() != 'MAINTENANCE']) : 0}">0</h3>
+                            </div>
+                            <i class="bi bi-check-circle fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-info text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-subtitle mb-2">Total Ports</h6>
+                                <h3 class="mb-0" th:text="${ports != null ? #lists.size(ports) : 0}">0</h3>
+                            </div>
+                            <i class="bi bi-geo-alt fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Recent Ships</h5>
+                        <a href="/ships" class="btn btn-sm btn-outline-primary">View All</a>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Type</th>
+                                        <th>Status</th>
+                                        <th>Location</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:if="${ships != null and !#lists.isEmpty(ships)}" 
+                                        th:each="ship : ${ships}">
+                                        <td th:text="${ship.name}">Ship Name</td>
+                                        <td th:text="${ship.type}">Cargo</td>
+                                        <td>
+                                            <span class="badge" 
+                                                  th:class="${ship.status.name() != 'MAINTENANCE'} ? 'bg-success' : 'bg-warning'"
+                                                  th:text="${ship.status.name() != 'MAINTENANCE'} ? 'Active' : 'Maintenance'">
+                                                Status
+                                            </span>
+                                        </td>
+                                        <td th:text="${ship.currentPort != null} ? ${ship.currentPort.name} : 'At Sea'">Port Name</td>
+                                        <td>
+                                            <a th:href="@{/ships}" class="btn btn-sm btn-outline-primary">View</a>
+                                            <a th:href="@{/ships}" class="btn btn-sm btn-outline-secondary ms-1">Edit</a>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${ships == null or #lists.isEmpty(ships)}">
+                                        <td colspan="5" class="text-center">No ships found.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Ports</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div th:if="${ports != null and !#lists.isEmpty(ports)}" 
+                                 th:each="port : ${ports}" 
+                                 class="col-12">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title" th:text="${port.name}">Port Name</h5>
+                                        <p class="card-text" 
+                                           th:text="${port.city} + ', ' + ${port.country}">Location</p>
+                                        <div class="d-flex justify-content-between">
+                                            <span class="text-muted" 
+                                                   th:if="${ships != null}"
+                                                   th:text="'Ships: ' + ${#lists.size(ships.?[currentPort != null and currentPort.id == port.id])}">0</span>
+                                            <span class="text-muted" 
+                                                   th:unless="${ships != null}">Ships: 0</span>
+                                            <a th:href="@{/ports}" class="btn btn-sm btn-outline-primary">View Details</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div th:if="${ports == null or #lists.isEmpty(ports)}" class="col-12">
+                                <p class="text-muted text-center">No ports found.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="mt-5 py-3 text-center text-muted">
+        <div class="container">
+            <p class="mb-0">&copy; 2023 ShipTrack Pro. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</body>
+</html>

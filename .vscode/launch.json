@@ -1,0 +1,25 @@
+{
+    "configurations": [
+            
+        {
+            "type": "java",
+            "name": "Spring Boot-ShipManagementApplication<ship-management-system>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.shipmanagement.ShipManagementApplication",
+            "projectName": "ship-management-system",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-ShipManagementSystem<ship-management-system>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.shipmanagement.ShipManagementSystem",
+            "projectName": "ship-management-system",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
